@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: IT Glue API
-  version: 1.0.0.20261110
+  version: 1.0.0.20261111
   description: 'Generated from the official IT Glue developer documentation. This is a best-effort, unofficial
     specification and is not an IT Glue or Kaseya document.
 
