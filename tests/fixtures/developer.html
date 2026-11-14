@@ -1,0 +1,198 @@
+<html><body>
+<div class="page__info current"><h1>Welcome to The IT Glue API</h1><article><p>Intro</p></article></div>
+
+<div class="page__apiv1passwords hidden">
+<h1>Passwords</h1>
+<div class="subtitle">A password refers to a login credential.</div>
+<article>
+<p>This resource allows you to manage all passwords in your account.</p>
+</article>
+</div>
+
+<div class="page__apiv1passwords__index hidden">
+<h1>GET /passwords</h1>
+<div class="subtitle">List or search passwords.</div>
+<h1>GET /organizations/:organization_id/relationships/passwords</h1>
+<div class="subtitle">List passwords for an organization.</div>
+<article>
+<div class="methodDetails">
+<p>Returns a list of passwords. See <a href="https://example.com/sorting">sorting</a> and <code>filter</code>.</p>
+<h2>Supported Formats</h2>
+<div class="method-format">  json</div>
+<h2>Errors</h2>
+<table class="table table-bordered">
+<thead><tr><th>Code</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><span class="label label-warning"> 401 </span></td><td>Unauthorized</td></tr>
+<tr><td><span class="label label-inverse"> 404 </span></td><td>Not Found</td></tr>
+</tbody>
+</table>
+<h2>Params</h2>
+<table class="table table-bordered">
+<thead><tr><th>Param name</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>organization_id </strong><br/><small>required</small></td>
+<td><p>Only required for nested relationships route</p>
+<div><strong>Validations:</strong></div>
+<ul><li><p>Must be a number.</p></li></ul>
+Metadata:
+<pre class="prettyprint lang-yaml">Param Type: In URL
+Notes: Must be a valid Organization Id in your Account
+</pre></td>
+</tr>
+<tr>
+<td><strong>filter </strong><br/><small>optional</small></td>
+<td><div><strong>Validations:</strong></div><ul><li><p>Must be a Hash</p></li></ul>
+Metadata:
+<pre class="prettyprint lang-yaml">Param Type: CGI
+Notes: Comma separated values
+</pre></td>
+</tr>
+<tr>
+<td><strong>filter[archived] </strong><br/><small>optional</small></td>
+<td><div><strong>Validations:</strong></div><ul><li><p>Must be one of: <code>true</code> , <code>false</code> , <code>1</code> , <code>0</code> .</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>filter[id] </strong><br/><small>optional</small></td>
+<td><div><strong>Validations:</strong></div><ul><li><p>Must be a number.</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>sort </strong><br/><small>optional</small></td>
+<td><div><strong>Validations:</strong></div><ul><li><p>Must be one of: <code>name</code> , <code>created_at</code> .</p></li></ul>
+Metadata:
+<pre class="prettyprint lang-yaml">Param Type: CGI
+Notes: | To Invert order use -, eg: -name
+Comma separated values
+</pre></td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+
+<div class="page__apiv1passwords__create hidden">
+<h1>POST /passwords</h1>
+<div class="subtitle">Create a password.</div>
+<h1>POST /organizations/:organization_id/relationships/passwords</h1>
+<div class="subtitle">Create a password for a particular organization.</div>
+<article>
+<div class="methodDetails">
+<p>Creates a password.</p>
+<pre class="ruby">{
+  <span class="ruby-value">"data":</span> { "type": "passwords" }
+}
+</pre>
+<h2>Errors</h2>
+<table class="table table-bordered">
+<thead><tr><th>Code</th><th>Description</th></tr></thead>
+<tbody><tr><td><span class="label"> 422 </span></td><td>Unprocessable Entity</td></tr></tbody>
+</table>
+<h2>Params</h2>
+<table class="table table-bordered">
+<thead><tr><th>Param name</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>organization_id </strong><br/><small>required</small></td>
+<td><p>Only required for nested relationships route</p>
+<ul><li><p>Must be a number.</p></li></ul>
+<pre class="prettyprint lang-yaml">Param Type: In URL
+</pre></td>
+</tr>
+<tr>
+<td><strong>show_password </strong><br/><small>optional</small></td>
+<td><ul><li><p>Must be one of: <code>true</code>, <code>false</code>.</p></li></ul>
+<pre class="prettyprint lang-yaml">Param Type: In URL
+</pre></td>
+</tr>
+<tr>
+<td><strong>data </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be a Hash</p></li></ul>
+<pre class="prettyprint lang-yaml">Param Type: JSON Body Param
+</pre></td>
+</tr>
+<tr>
+<td><strong>data[type] </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be one of: <code>passwords</code>.</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>data[attributes] </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be a Hash</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>data[attributes][name] </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be a String</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>data[attributes][url] </strong><br/><small>optional , nil allowed</small></td>
+<td><p>Login URL</p><ul><li><p>Must be a String</p></li></ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+
+<div class="page__apiv1passwords__bulk_destroy hidden">
+<h1>DELETE /passwords</h1>
+<div class="subtitle">Delete multiple passwords.</div>
+<article>
+<div class="methodDetails">
+<p>Deletes passwords in bulk.</p>
+<h2>Params</h2>
+<table class="table table-bordered">
+<thead><tr><th>Param name</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>data </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be an Array of nested elements</p></li></ul>
+<pre class="prettyprint lang-yaml">Param Type: JSON Body Param
+</pre></td>
+</tr>
+<tr>
+<td><strong>data[_] </strong><br/><small>optional</small></td>
+<td><ul><li><p>Must be a Hash</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>data[_][attributes] </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be a Hash</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>data[_][attributes][id] </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be a number.</p></li></ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+
+<div class="page__apiv1exports__create hidden">
+<h1>POST /exports</h1>
+<div class="subtitle">Create an export.</div>
+<article>
+<div class="methodDetails">
+<p>Documented without the data wrapper.</p>
+<h2>Params</h2>
+<table class="table table-bordered">
+<thead><tr><th>Param name</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>type </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be one of: <code>exports</code>.</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>attributes </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be a Hash</p></li></ul></td>
+</tr>
+<tr>
+<td><strong>attributes[organization_id] </strong><br/><small>required</small></td>
+<td><ul><li><p>Must be a number.</p></li></ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+</body></html>

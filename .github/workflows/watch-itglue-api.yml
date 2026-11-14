@@ -1,0 +1,101 @@
+name: Watch IT Glue API
+
+on:
+  schedule:
+    - cron: "17 5 * * *" # once a day at 05:17 UTC
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rewrite the spec and cut a release even if nothing changed"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: watch-itglue-api
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      # Rewrites ITGlue.json and CHANGELOG.md only when the documented API changed.
+      - name: Check the IT Glue API documentation
+        id: check
+        env:
+          FORCE: ${{ inputs.force && '--force' || '' }}
+        run: |
+          itglue-openapi \
+            --release-notes-file "$RUNNER_TEMP/release-notes.md" \
+            --github-output "$GITHUB_OUTPUT" \
+            $FORCE
+
+      - name: Commit the updated spec
+        if: steps.check.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ITGlue.json CHANGELOG.md
+          git commit -m "chore: IT Glue API ${VERSION}"
+          git push
+
+      # Runs every day (not just after a change) so a release that failed to publish is retried,
+      # and so the very first run publishes a baseline release for the committed spec.
+      - name: Publish release if missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python -c "import json; print(json.load(open('ITGlue.json'))['info']['version'])")
+          tag="v${version}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists."
+            exit 0
+          fi
+
+          notes="$RUNNER_TEMP/release-notes.md"
+          if [ ! -s "$notes" ]; then
+            awk -v header="## ${version} " 'index($0, header) == 1 {found = 1; next} /^## / {found = 0} found' CHANGELOG.md > "$notes"
+          fi
+          [ -s "$notes" ] || echo "IT Glue API specification ${version}." > "$notes"
+
+          gh release create "$tag" ITGlue.json \
+            --target "$(git rev-parse HEAD)" \
+            --title "IT Glue API ${version}" \
+            --notes-file "$notes" \
+            --latest
+
+      # GitHub disables scheduled workflows after 60 days without repository activity. Quiet periods
+      # (no API changes) produce no commits, so push an empty orphan commit to a throwaway branch.
+      - name: Keepalive
+        if: steps.check.outputs.changed != 'true'
+        run: |
+          age_days=$(( ($(date +%s) - $(git log -1 --format=%ct)) / 86400 ))
+          echo "Days since last commit: ${age_days}"
+          if [ "$age_days" -lt 45 ]; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan keepalive
+          git rm -rf --quiet --cached . || true
+          git commit --allow-empty -m "chore: keepalive"
+          git push --force origin keepalive

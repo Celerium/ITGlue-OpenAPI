@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "itglue-openapi"
+version = "2.0.0"
+description = "Convert the IT Glue developer documentation into an OpenAPI 3 spec and track changes to it."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "beautifulsoup4>=4.12,<5",
+    "requests>=2.32,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "openapi-spec-validator>=0.7",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+itglue-openapi = "itglue_openapi.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["itglue_openapi*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
