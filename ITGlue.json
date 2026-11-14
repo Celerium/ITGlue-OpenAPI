@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "IT Glue API",
-    "version": "1.118.132",
+    "version": "1.118.132.20261114",
     "x-itglue-product-version": "1.118.132",
     "description": "Unofficial, best-effort OpenAPI specification generated from the official IT Glue developer documentation. It is not published or endorsed by IT Glue or Kaseya.\n\n- Documentation: https://api.itglue.com/developer/\n- Pagination: https://help.itglue.kaseya.com/help/Content/1-admin/it-glue-api/pagination-in-the-it-glue-api.html\n- Sorting and filtering: https://help.itglue.kaseya.com/help/Content/1-admin/it-glue-api/sorting-and-filtering-in-the-it-glue-api.html\n- Generator and change history: https://github.com/Celerium/ITGlue-OpenAPI\n\nRequests authenticate with the `x-api-key` header. Payloads use `Content-Type: application/vnd.api+json`.\n\nThe version of this document follows the IT Glue product version (see the release notes). When the API changes without a product version change, the current date (`YYYYMMDD`) is appended."
   },
